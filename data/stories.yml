@@ -1,0 +1,48 @@
+version: "3.1"
+
+# Multi-turn paths for TEDPolicy. Single-turn logic lives in rules.yml.
+stories:
+- story: track an order, then nothing else
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: check_order_status
+  - action: order_status_form
+  - active_loop: order_status_form
+  - active_loop: null
+  - action: action_check_order_status
+  - action: utter_anything_else
+  - intent: deny
+  - action: utter_goodbye
+
+- story: track an order, then report a problem with it
+  steps:
+  - intent: check_order_status
+    entities:
+    - order_id: ORD-48213
+  - action: order_status_form
+  - active_loop: order_status_form
+  - active_loop: null
+  - action: action_check_order_status
+  - action: utter_anything_else
+  - intent: affirm
+  - action: utter_how_can_help
+  - intent: report_issue
+  - action: issue_form
+  - active_loop: issue_form
+  - active_loop: null
+  - action: action_create_ticket
+  - action: utter_anything_else
+  - intent: deny
+  - action: utter_goodbye
+
+- story: open a ticket, then say thanks
+  steps:
+  - intent: report_issue
+  - action: issue_form
+  - active_loop: issue_form
+  - active_loop: null
+  - action: action_create_ticket
+  - action: utter_anything_else
+  - intent: thank
+  - action: utter_youre_welcome

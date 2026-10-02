@@ -1,0 +1,3 @@
+# Local development: action server on localhost, in-memory tracker store.
+action_endpoint:
+  url: "http://localhost:5055/webhook"

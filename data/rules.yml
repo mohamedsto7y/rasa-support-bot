@@ -1,0 +1,129 @@
+version: "3.1"
+
+rules:
+# --- single-turn behaviour -------------------------------------------------
+- rule: greet
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: thank
+  steps:
+  - intent: thank
+  - action: utter_youre_welcome
+
+- rule: bot challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+- rule: FAQ via response selector
+  steps:
+  - intent: faq
+  - action: utter_faq
+
+- rule: hand off to a human
+  steps:
+  - intent: request_human
+  - action: utter_handoff
+
+- rule: low NLU confidence
+  steps:
+  - intent: nlu_fallback
+  - action: utter_default
+
+# --- order status form -----------------------------------------------------
+- rule: activate order status form
+  steps:
+  - intent: check_order_status
+  - action: order_status_form
+  - active_loop: order_status_form
+
+- rule: submit order status form
+  condition:
+  - active_loop: order_status_form
+  steps:
+  - action: order_status_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_check_order_status
+  - action: utter_anything_else
+
+# --- issue / ticket form ---------------------------------------------------
+- rule: activate issue form
+  steps:
+  - intent: report_issue
+  - action: issue_form
+  - active_loop: issue_form
+
+- rule: submit issue form
+  condition:
+  - active_loop: issue_form
+  steps:
+  - action: issue_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_create_ticket
+  - action: utter_anything_else
+
+# --- interruptions inside forms (unhappy paths) ----------------------------
+- rule: cancel order status form
+  condition:
+  - active_loop: order_status_form
+  steps:
+  - intent: cancel
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_cancelled
+
+- rule: cancel issue form
+  condition:
+  - active_loop: issue_form
+  steps:
+  - intent: cancel
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_cancelled
+
+- rule: FAQ in the middle of the order status form
+  condition:
+  - active_loop: order_status_form
+  steps:
+  - intent: faq
+  - action: utter_faq
+  - action: order_status_form
+  - active_loop: order_status_form
+
+- rule: FAQ in the middle of the issue form
+  condition:
+  - active_loop: issue_form
+  steps:
+  - intent: faq
+  - action: utter_faq
+  - action: issue_form
+  - active_loop: issue_form
+
+- rule: agent requested in the middle of the order status form
+  condition:
+  - active_loop: order_status_form
+  steps:
+  - intent: request_human
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_handoff
+
+- rule: agent requested in the middle of the issue form
+  condition:
+  - active_loop: issue_form
+  steps:
+  - intent: request_human
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_handoff

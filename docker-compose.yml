@@ -1,0 +1,36 @@
+# Full local stack: Rasa + action server + mock backend + Postgres tracker store.
+# docker compose up --build   then POST to http://localhost:5005/webhooks/rest/webhook
+services:
+  rasa:
+    build: .
+    command: ["run", "--enable-api", "--cors", "*", "--port", "5005",
+              "--model", "models/model.tar.gz", "--endpoints", "endpoints.docker.yml"]
+    ports: ["5005:5005"]
+    environment:
+      ACTION_ENDPOINT_URL: http://actions:5055/webhook
+      DB_HOST: postgres
+      DB_NAME: rasa
+      DB_USER: rasa
+      DB_PASSWORD: rasa
+    depends_on: [actions, postgres]
+
+  actions:
+    build: ./actions
+    environment:
+      ORDERS_API_URL: http://mock_api:8000
+    depends_on: [mock_api]
+
+  mock_api:
+    build: ./mock_api
+    ports: ["8000:8000"]
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rasa
+      POSTGRES_USER: rasa
+      POSTGRES_PASSWORD: rasa
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+volumes:
+  pgdata:

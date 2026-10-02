@@ -1,0 +1,53 @@
+version: "3.1"
+
+# Run with: rasa test   (checks NLU predictions on these messages and the dialogue policy)
+stories:
+- story: English order status happy path
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      where is my order?
+    intent: check_order_status
+  - action: order_status_form
+  - active_loop: order_status_form
+  - user: |
+      [48213](order_id)
+    intent: inform
+  - action: order_status_form
+  - active_loop: null
+  - action: action_check_order_status
+  - action: utter_anything_else
+  - user: |
+      no thanks
+    intent: deny
+  - action: utter_goodbye
+
+- story: Arabic complaint with a mid-form FAQ
+  steps:
+  - user: |
+      عندي مشكلة في الطلب
+    intent: report_issue
+  - action: issue_form
+  - active_loop: issue_form
+  - user: |
+      طرق الدفع ايه
+    intent: faq
+  - action: utter_faq
+  - action: issue_form
+  - active_loop: issue_form
+  - user: |
+      /cancel
+    intent: cancel
+  - action: action_deactivate_loop
+  - active_loop: null
+  - action: utter_cancelled
+
+- story: agent request
+  steps:
+  - user: |
+      حولني لموظف
+    intent: request_human
+  - action: utter_handoff

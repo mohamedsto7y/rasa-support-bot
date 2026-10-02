@@ -1,0 +1,236 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - hey there
+    - good morning
+    - good evening
+    - hello, I need some help
+    - hi bot
+    - ازيك
+    - أهلاً
+    - اهلا
+    - السلام عليكم
+    - صباح الخير
+    - مساء الخير
+    - هاي
+    - عامل ايه
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you later
+    - that's all, bye
+    - have a nice day
+    - مع السلامة
+    - سلام
+    - باي
+    - يلا سلام
+    - اشوفك بعدين
+
+- intent: affirm
+  examples: |
+    - yes
+    - yeah
+    - yes please
+    - sure
+    - correct
+    - of course
+    - اه
+    - أيوه
+    - ايوة
+    - تمام
+    - ماشي
+    - اكيد
+
+- intent: deny
+  examples: |
+    - no
+    - nope
+    - no thanks
+    - not really
+    - nothing else
+    - that's it
+    - لا
+    - لأ
+    - لا شكرا
+    - مفيش حاجة تانية
+    - كده تمام
+
+- intent: thank
+  examples: |
+    - thanks
+    - thank you
+    - thanks a lot
+    - great, thanks
+    - شكرا
+    - شكراً جزيلاً
+    - متشكر
+    - ميرسي
+    - تسلم
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - am I talking to a human?
+    - are you a real person?
+    - is this a robot?
+    - انت بوت؟
+    - انت روبوت
+    - انا بكلم بني آدم؟
+    - انت حد حقيقي؟
+
+- intent: check_order_status
+  examples: |
+    - where is my order?
+    - track my order
+    - what's the status of my order
+    - I want to check my order
+    - has my order shipped?
+    - when will my order arrive
+    - order status please
+    - can you track order [ORD-48213](order_id)
+    - where is order [10001](order_id)
+    - status of [ORD-55555](order_id)
+    - my order [77777](order_id) hasn't arrived
+    - track [ORD 48213](order_id)
+    - طلبي فين؟
+    - عايز اعرف طلبي وصل لفين
+    - الأوردر بتاعي فين
+    - عايز أتابع الطلب
+    - امتى الطلب هيوصل
+    - حالة الطلب ايه
+    - الأوردر رقم [48213](order_id) فين
+    - عايز اتابع طلب [ORD-10001](order_id)
+    - طلب رقم [٥٥٥٥٥](order_id) وصل لفين
+
+- intent: report_issue
+  examples: |
+    - I have a problem with my order
+    - I want to make a complaint
+    - something is wrong with my order
+    - I want to report an issue
+    - my package arrived [broken]{"entity": "issue_type", "value": "damaged"}
+    - the item is [damaged](issue_type)
+    - my delivery is [late]{"entity": "issue_type", "value": "delivery"}
+    - I was [charged twice]{"entity": "issue_type", "value": "payment"}
+    - there's a [payment](issue_type) problem
+    - my [delivery](issue_type) never came
+    - عندي مشكلة في الطلب
+    - عايز أعمل شكوى
+    - في مشكلة
+    - المنتج وصل [مكسور]{"entity": "issue_type", "value": "damaged"}
+    - الشحنة [اتأخرت]{"entity": "issue_type", "value": "delivery"}
+    - [اتخصم مني مرتين]{"entity": "issue_type", "value": "payment"}
+    - عندي مشكلة في [الدفع]{"entity": "issue_type", "value": "payment"}
+
+- intent: inform
+  examples: |
+    - [ORD-48213](order_id)
+    - [48213](order_id)
+    - it's [10001](order_id)
+    - order number is [ORD-55555](order_id)
+    - [ORD 77777](order_id)
+    - the number is [12345](order_id)
+    - رقم الطلب [48213](order_id)
+    - [٤٨٢١٣](order_id)
+    - [01012345678](phone_number)
+    - my number is [01198765432](phone_number)
+    - call me on [01234567890](phone_number)
+    - رقمي [01512345678](phone_number)
+    - كلمني على [01001234567](phone_number)
+    - it's a [delivery](issue_type) problem
+    - [payment](issue_type)
+    - [damaged](issue_type) item
+    - مشكلة [توصيل]{"entity": "issue_type", "value": "delivery"}
+    - something [else]{"entity": "issue_type", "value": "other"}
+
+- intent: cancel
+  examples: |
+    - cancel
+    - never mind
+    - forget it
+    - stop
+    - I changed my mind
+    - خلاص
+    - مش عايز
+    - الغي
+    - انسى الموضوع
+    - بلاش
+
+- intent: request_human
+  examples: |
+    - talk to an agent
+    - I want to speak to a human
+    - connect me to customer service
+    - real person please
+    - can I talk to someone
+    - agent
+    - عايز أكلم حد
+    - حولني لموظف
+    - عايز اكلم خدمة العملاء
+    - عايز بني آدم
+
+- intent: faq/opening_hours
+  examples: |
+    - what are your opening hours?
+    - when are you open?
+    - what time does customer service close?
+    - are you open on Friday?
+    - مواعيد العمل ايه
+    - انتو فاتحين امتى
+    - خدمة العملاء شغالة لحد امتى
+
+- intent: faq/payment_methods
+  examples: |
+    - how can I pay?
+    - do you accept credit cards?
+    - can I pay cash on delivery?
+    - do you take fawry?
+    - payment options
+    - ادفع ازاي
+    - بتقبلوا فيزا؟
+    - ينفع ادفع كاش عند الاستلام
+    - طرق الدفع ايه
+
+- intent: faq/delivery_time
+  examples: |
+    - how long does delivery take?
+    - how many days for shipping?
+    - do you deliver to Alexandria?
+    - delivery time to Giza
+    - التوصيل بياخد قد ايه
+    - الشحن كام يوم
+    - بتوصلوا اسكندرية؟
+
+- synonym: damaged
+  examples: |
+    - broken
+    - مكسور
+    - تالف
+
+- synonym: delivery
+  examples: |
+    - late
+    - اتأخرت
+    - توصيل
+
+- synonym: payment
+  examples: |
+    - charged twice
+    - اتخصم مني مرتين
+    - الدفع
+
+- regex: order_id
+  examples: |
+    - ORD[- ]?\d{5}
+    - \b\d{5}\b
+    - [٠-٩]{5}
+
+- regex: phone_number
+  examples: |
+    - 01[0125]\d{8}

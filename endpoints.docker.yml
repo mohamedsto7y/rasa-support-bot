@@ -1,0 +1,12 @@
+# docker compose: actions by service name, conversations persisted in Postgres.
+action_endpoint:
+  url: "${ACTION_ENDPOINT_URL}"
+
+tracker_store:
+  type: SQL
+  dialect: "postgresql"
+  url: "${DB_HOST}"
+  port: 5432
+  db: "${DB_NAME}"
+  username: "${DB_USER}"
+  password: "${DB_PASSWORD}"

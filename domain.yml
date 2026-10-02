@@ -1,0 +1,252 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - thank
+  - bot_challenge
+  - check_order_status
+  - report_issue
+  - inform
+  - cancel
+  - request_human
+  - faq
+
+entities:
+  - order_id
+  - phone_number
+  - issue_type
+
+# Slots answered inside a form also accept free text (from_text), so a user can just
+# type "48213" or "my phone is 010...". The validation actions do the real parsing.
+slots:
+  lang:
+    type: categorical
+    values: [en, ar]
+    initial_value: en
+    influence_conversation: false
+    mappings:
+      - type: custom   # filled every turn by action_validate_slot_mappings
+
+  order_id:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: order_id
+      - type: from_text
+        not_intent: [cancel, faq, request_human, bot_challenge, greet, goodbye]
+        conditions:
+          - active_loop: order_status_form
+            requested_slot: order_id
+
+  issue_type:
+    type: categorical
+    values: [delivery, payment, damaged, other]
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: issue_type
+      - type: from_text
+        not_intent: [cancel, faq, request_human, bot_challenge, greet, goodbye]
+        conditions:
+          - active_loop: issue_form
+            requested_slot: issue_type
+
+  phone_number:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: phone_number
+      - type: from_text
+        not_intent: [cancel, faq, request_human, bot_challenge, greet, goodbye]
+        conditions:
+          - active_loop: issue_form
+            requested_slot: phone_number
+
+forms:
+  order_status_form:
+    required_slots:
+      - order_id
+  issue_form:
+    required_slots:
+      - issue_type
+      - phone_number
+
+actions:
+  - action_validate_slot_mappings   # sets `lang` on every user turn
+  - validate_order_status_form
+  - validate_issue_form
+  - action_check_order_status
+  - action_create_ticket
+
+# English is the unconditional variation; Arabic wins when slot lang == ar.
+responses:
+  utter_greet:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "أهلاً بيك! أنا مساعد خدمة العملاء. أقدر أتابعلك طلب، أفتحلك شكوى، أو أجاوب على أسئلة عن المواعيد والدفع والتوصيل."
+    - text: "Hi! I'm the customer support assistant. I can track an order, open a ticket for a problem, or answer questions about opening hours, payment and delivery."
+
+  utter_how_can_help:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "تمام، أقدر أساعدك في إيه؟"
+    - text: "Sure, what can I help you with?"
+
+  utter_anything_else:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "في حاجة تانية أقدر أساعدك فيها؟"
+    - text: "Is there anything else I can help you with?"
+
+  utter_goodbye:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "مع السلامة! يومك سعيد."
+    - text: "Goodbye, have a great day!"
+
+  utter_youre_welcome:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "العفو! تحت أمرك."
+    - text: "You're welcome!"
+
+  utter_iamabot:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "أنا مساعد آلي. لو حابب تكلم موظف قولي \"عايز أكلم حد\"."
+    - text: "I'm a virtual assistant. If you'd like a person, just say \"talk to an agent\"."
+
+  utter_ask_order_id:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "ممكن رقم الطلب؟ (مثلاً ORD-48213 أو 48213)"
+    - text: "What's your order number? (e.g. ORD-48213 or just 48213)"
+
+  utter_invalid_order_id:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "مش لاقي رقم طلب صحيح. رقم الطلب ٥ أرقام، زي 48213."
+    - text: "That doesn't look like an order number. It's 5 digits, like 48213."
+
+  utter_ask_issue_type:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "المشكلة في إيه بالظبط؟"
+      buttons:
+        - title: "تأخير في التوصيل"
+          payload: '/inform{"issue_type": "delivery"}'
+        - title: "مشكلة في الدفع"
+          payload: '/inform{"issue_type": "payment"}'
+        - title: "المنتج وصل تالف"
+          payload: '/inform{"issue_type": "damaged"}'
+        - title: "حاجة تانية"
+          payload: '/inform{"issue_type": "other"}'
+    - text: "What kind of problem is it?"
+      buttons:
+        - title: "Late delivery"
+          payload: '/inform{"issue_type": "delivery"}'
+        - title: "Payment problem"
+          payload: '/inform{"issue_type": "payment"}'
+        - title: "Item arrived damaged"
+          payload: '/inform{"issue_type": "damaged"}'
+        - title: "Something else"
+          payload: '/inform{"issue_type": "other"}'
+
+  utter_ask_phone_number:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "ممكن رقم موبايلك عشان فريق الدعم يكلمك؟"
+    - text: "What's a mobile number our support team can reach you on?"
+
+  utter_invalid_phone_number:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "الرقم ده مش مظبوط. اكتب رقم موبايل مصري من ١١ رقم يبدأ بـ 01."
+    - text: "That number doesn't look right. Please send an 11-digit Egyptian mobile starting with 01."
+
+  utter_cancelled:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "تمام، لغيت الطلب ده."
+    - text: "No problem, I've cancelled that."
+
+  utter_handoff:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "حاضر، هحولك لأحد ممثلي خدمة العملاء دلوقتي. استنى معايا لحظة."
+    - text: "Sure, I'm transferring you to a customer service agent now. Please hold on."
+
+  utter_api_down:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "النظام مش متاح دلوقتي. تحب أحولك لموظف؟"
+    - text: "Our order system isn't responding right now. Would you like me to connect you to an agent?"
+
+  utter_default:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "معلش مش فاهم قصدك. ممكن تقولها بطريقة تانية؟"
+    - text: "Sorry, I didn't quite get that. Could you rephrase?"
+
+  utter_faq/opening_hours:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "خدمة العملاء شغالة كل يوم من ٩ الصبح لـ ١٠ بالليل، والمساعد الآلي ٢٤ ساعة."
+    - text: "Customer service is open every day 9am-10pm Cairo time; this assistant runs 24/7."
+
+  utter_faq/payment_methods:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "بنقبل الفيزا والماستركارد وفوري وإنستاباي والدفع عند الاستلام."
+    - text: "We accept Visa, Mastercard, Fawry, InstaPay and cash on delivery."
+
+  utter_faq/delivery_time:
+    - condition:
+        - type: slot
+          name: lang
+          value: ar
+      text: "التوصيل جوه القاهرة والجيزة من ١ لـ ٣ أيام، وباقي المحافظات من ٣ لـ ٥ أيام."
+    - text: "Delivery takes 1-3 days in Cairo and Giza and 3-5 days elsewhere in Egypt."
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

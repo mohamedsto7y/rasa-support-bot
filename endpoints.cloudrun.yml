@@ -1,0 +1,5 @@
+# Cloud Run demo: in-memory tracker, so run with --max-instances 1.
+# Production: SQL tracker store on Cloud SQL (as in endpoints.docker.yml) plus a
+# Redis lock store on Memorystore, so any replica can serve any conversation.
+action_endpoint:
+  url: "${ACTION_ENDPOINT_URL}"

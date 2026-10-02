@@ -1,0 +1,6 @@
+.venv/
+models/
+results/
+.rasa/
+__pycache__/
+*.db

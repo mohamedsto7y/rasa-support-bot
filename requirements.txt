@@ -1,0 +1,3 @@
+rasa==3.6.20
+aiogram==2.15  # pin: otherwise pip backtracks for 20+ minutes resolving rasa 3.6
+setuptools<70  # rasa 3.6 imports pkg_resources
